@@ -1,7 +1,7 @@
 %%
 %% This is file 'hello.tex'.
 %%
-%% Copyright (c) 2018 Takayuki YATO (aka. "ZR")
+%% Copyright (c) 2018,2019 Takayuki YATO (aka. "ZR")
 %%   GitHub:   https://github.com/zr-tex8r
 %%   Twitter:  @zr_tex8r
 %%
@@ -38,6 +38,21 @@
 \if X\my@engine \my@pdftrue \fi
 \if A\my@engine \my@pdftrue \fi
 
+%% LuaTeX variants
+\if L\my@engine \ifx\luatexbanner\@undefined\else
+  \ifx\luaescapestring\@undefined\else
+    \ifcase\directlua{
+      local s = "\luaescapestring{\luatexbanner}"
+      if s:match("LuajitTeX") then tex.write("1")
+      elseif s:match("HarfTeX") then tex.write("2")
+      else tex.write("0")
+      end}\relax
+    \or \let\my@engine=I % LuajitTeX
+    \or \let\my@engine=H % HarfTeX
+    \fi
+  \fi
+\fi\fi
+
 %% \my@lmodern
 \if X\my@engine
   \IfFileExists{tulmr.fd}{%
@@ -58,6 +73,8 @@
     \ifmy@pdf pdf\/\fi \LaTeX
   \else\ifx o\my@engine Lamed% forget about Lambda
   \else\ifx L\my@engine Lua\LaTeX
+  \else\ifx I\my@engine Luajit\LaTeX
+  \else\ifx H\my@engine Harf\LaTeX
   \else\ifx X\my@engine \begingroup
       \my@lmodern X\kern-.125em\lower.5ex\hbox{\char"018E}%
       \kern-.075em\LaTeX
@@ -68,7 +85,7 @@
   \else\ifx j\my@engine
     \leavevmode\lower.5ex\hbox{J}\kern-.1em \LaTeX
   \else \LaTeX % good old...
-  \fi\fi\fi\fi\fi\fi\fi\fi}
+  \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi}
 
 %--------------------------------------- dvips or dvipdfmx
 
